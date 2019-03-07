@@ -15,9 +15,15 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	// Public
+	e.Static("/", "public")
+
 	// Routes
 	uploader := &controllers.UploadController{}
-	e.GET("/", uploader.UploadHandler)
+	// home := &controllers.HomeController{}
+
+	// e.GET("/", home.HomeHandler)
+	e.POST("/upload", uploader.UploadHandler)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
