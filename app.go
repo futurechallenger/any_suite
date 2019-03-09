@@ -20,9 +20,9 @@ func main() {
 
 	// Routes
 	uploader := &controllers.UploadController{}
-	// home := &controllers.HomeController{}
+	home := &controllers.HomeController{}
 
-	// e.GET("/", home.HomeHandler)
+	e.GET("/docker/install", home.HomeHandler)
 	e.POST("/upload", uploader.UploadHandler)
 
 	// Start server
