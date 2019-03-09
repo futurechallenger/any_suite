@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 
@@ -21,6 +22,16 @@ func (uploader *UploadController) UploadHandler(c echo.Context) error {
 		return err
 	}
 
+	if err := uploader.storeFile(file); err != nil {
+		return err
+	}
+
+	return c.HTML(http.StatusOK,
+		fmt.Sprintf("<p>File %s uploaded successfully with fields.</p>",
+			file.Filename))
+}
+
+func (uploader *UploadController) storeFile(file *multipart.FileHeader) error {
 	src, err := file.Open()
 	if err != nil {
 		return err
@@ -37,7 +48,5 @@ func (uploader *UploadController) UploadHandler(c echo.Context) error {
 		return err
 	}
 
-	return c.HTML(http.StatusOK,
-		fmt.Sprintf("<p>File %s uploaded successfully with fields.</p>",
-			file.Filename))
+	return nil
 }
