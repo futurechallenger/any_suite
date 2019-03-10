@@ -22,3 +22,10 @@ func (home *HomeController) HomeHandler(c echo.Context) error {
 
 	return c.String(http.StatusOK, "Hello World!")
 }
+
+// HelloHandler handle path `/hello`
+func (home *HomeController) HelloHandler(c echo.Context) error {
+	return c.Render(http.StatusOK, "demo.html", map[string]interface{}{
+		"name": "Jack",
+	})
+}

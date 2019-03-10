@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 // Container deals with Docker containers
@@ -28,8 +29,8 @@ func (c *Container) CheckInstalled() (installed int16, err error) {
 	}
 
 	output := string(bs)
-	if output.Contains("Docker") == true {
-
+	if strings.Contains(output, "Docker") == true {
+		fmt.Println("Docker is installed")
 	}
 	fmt.Printf("Check result %s\n", output)
 
