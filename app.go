@@ -1,6 +1,10 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"int_ecosys/config"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -8,7 +12,15 @@ import (
 	"int_ecosys/utils"
 )
 
+var BUILD_TYPE string
+
 func main() {
+	// Used in build, go build -ldflags "-X main.BUILD_TYPE=dev"
+	fmt.Printf("BUILD TYPE: %s\n", BUILD_TYPE)
+
+	// Used with run commana, go run app.go -env debug
+	config.SetBuildEnv(flag.String("env", "debug", "runing in env `debug` or `release`"))
+
 	// Echo instance
 	e := echo.New()
 
@@ -27,6 +39,7 @@ func main() {
 
 	// test
 	e.GET("/hello", home.HelloHandler)
+	e.GET("/auth", home.AuthHandler)
 
 	e.GET("/docker/install", home.HomeHandler)
 	e.POST("/upload", uploader.UploadHandler)
