@@ -29,3 +29,7 @@ func (home *HomeController) HelloHandler(c echo.Context) error {
 		"name": "Jack",
 	})
 }
+
+func (home *HomeController) AuthHandler(c echo.Context) error {
+
+}
