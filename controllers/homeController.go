@@ -8,16 +8,14 @@ import (
 	"int_ecosys/services"
 
 	"github.com/labstack/echo/v4"
-
-	requests "github.com/levigross/grequests"
 )
 
 // HomeController handle user's upload
 type HomeController struct {
 }
 
-// HomeHandler will handle user's upload
-func (home *HomeController) HomeHandler(c echo.Context) error {
+// ContainerHandler will handle user's upload
+func (home *HomeController) ContainerHandler(c echo.Context) error {
 	fmt.Println("Hello Uploader")
 
 	container := &services.Container{}
@@ -33,44 +31,63 @@ func (home *HomeController) HelloHandler(c echo.Context) error {
 	})
 }
 
+// HomeHandler handle path `/home`
+func (home *HomeController) HomeHandler(c echo.Context) error {
+	return c.Render(http.StatusOK, "home.html", map[string]interface{}{
+		"Title":     "Home",
+		"NeedLogin": true,
+		"Data":      "Formal functions here",
+	})
+}
+
 // AuthHandler handles auth
 func (home *HomeController) AuthHandler(c echo.Context) error {
 	server := config.Config()["server"]
 	redirectURL := config.Config()["redirectUrl"]
 	clientID := config.Config()["clientId"]
 
-	codeServer := fmt.Sprintf("%s/restapi/oauth/authorize", server)
-	codeRes, codeErr := requests.Get(codeServer, &requests.RequestOptions{
-		Params: map[string]string{
-			"response_type": "code",
-			"redirect_uri":  redirectURL,
-			"client_id":     clientID,
-			"display":       "popup",
-		}})
+	authURI := fmt.Sprintf("%s/restapi/oauth/authorize", server)
+	// codeRes, codeErr := requests.Get(codeServer, &requests.RequestOptions{
+	// 	Params: map[string]string{
+	// 		"response_type": "code",
+	// 		"redirect_uri":  redirectURL,
+	// 		"client_id":     clientID,
+	// 		"display":       "popup",
+	// 	}},
+	// )
 
-	if codeErr != nil {
-		fmt.Printf("Unable to make such request:  %v\n", codeRes)
-		return codeErr
+	queryParams := map[string]string{
+		"response_type": "code",
+		"redirect_uri":  redirectURL,
+		"client_id":     clientID,
+		"display":       "popup",
 	}
-	if !codeRes.Ok {
-		fmt.Printf("Request failed with: %d\n", codeRes.StatusCode)
+
+	queryString := ""
+	count := 0
+	for key, val := range queryParams {
+		if count == 0 {
+			queryString = fmt.Sprintf("%s=%s", key, val)
+		} else {
+			queryString = fmt.Sprintf("%s&%s=%s", queryString, key, val)
+		}
+
+		count = count + 1
 	}
+	authURI = fmt.Sprintf("%s?%s", authURI, queryString)
 
-	fmt.Printf("RES HTML: %s\n", codeRes.String())
-	// server = fmt.Sprintf("%s/restapi/oauth/token", server)
-	// res, err := requests.Post(server, &requests.RequestOptions{
-	// 	Data: map[string]string{
-	// 		"grant_type": "authorization_code",
-	// 	}})
-	// if err != nil {
-	// 	// log.Fatalln("Unable to make such request: ", err)
-	// 	fmt.Printf("Unable to make such request:  %v\n", res)
-	// 	return err
-	// }
+	return c.Render(http.StatusOK, "auth.html", map[string]string{
+		"AuthUri":     authURI,
+		"RedirectUri": redirectURL,
+		"TokenJson":   "i dont know yet",
+	})
+}
 
-	// if !res.Ok {
-	// 	fmt.Printf("Request failed with: %d\n", res.StatusCode)
-	// }
+// AuthCallbackHandler handles `/auth/callback`
+func (home *HomeController) AuthCallbackHandler(c echo.Context) error {
+	code := c.QueryParam("code")
+	fmt.Printf("===>Code is %s\n", code)
 
-	return c.HTML(http.StatusOK, codeRes.String())
+	// TODO: Now we have code, let's request token
+	return c.String(http.StatusOK, code)
 }

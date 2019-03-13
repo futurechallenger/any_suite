@@ -39,9 +39,11 @@ func main() {
 
 	// test
 	e.GET("/hello", home.HelloHandler)
+	e.GET("/home", home.HomeHandler)
 	e.GET("/auth", home.AuthHandler)
+	e.GET("/auth/callback", home.AuthCallbackHandler)
 
-	e.GET("/docker/install", home.HomeHandler)
+	e.GET("/docker/install", home.ContainerHandler)
 	e.POST("/upload", uploader.UploadHandler)
 
 	// Start server

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{.Title}}</title>
+  </head>
+  <body>
+    {{if .NeedLogin}}
+    <div>
+      <script type="text/javascript">
+        function loginIn() {
+          window.open("http://localhost:1323/auth", "newwindow");
+        }
+      </script>
+      <div style="width: 100%;height:100%" onclick="javascript:loginIn();">
+        Sign In
+      </div>
+    </div>
+    {{else}}
+    <div>
+      <span>{{.Data}}</span>
+    </div>
+    {{ end }}
+  </body>
+</html>
