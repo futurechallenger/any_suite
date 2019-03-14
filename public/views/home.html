@@ -5,7 +5,7 @@
     <title>{{.Title}}</title>
   </head>
   <body>
-    {{if .NeedLogin}}
+    {{if (eq .NeedLogin "Yes")}}
     <div>
       <script type="text/javascript">
         function loginIn() {
