@@ -1,5 +1,6 @@
 // TODO: access clientId & client secret from env
 // https://gobyexample.com/environment-variables
+// ENV=DEBUG go run app.go
 
 package config
 
