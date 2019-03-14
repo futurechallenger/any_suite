@@ -1,17 +1,23 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 
 	"int_ecosys/config"
+	"int_ecosys/models"
 	"int_ecosys/services"
+	"int_ecosys/utils"
 
 	"github.com/labstack/echo/v4"
+
+	requests "github.com/levigross/grequests"
 )
 
 // HomeController handle user's upload
 type HomeController struct {
+	tokenInfo models.AuthInfo
 }
 
 // ContainerHandler will handle user's upload
@@ -47,15 +53,6 @@ func (home *HomeController) AuthHandler(c echo.Context) error {
 	clientID := config.Config()["clientId"]
 
 	authURI := fmt.Sprintf("%s/restapi/oauth/authorize", server)
-	// codeRes, codeErr := requests.Get(codeServer, &requests.RequestOptions{
-	// 	Params: map[string]string{
-	// 		"response_type": "code",
-	// 		"redirect_uri":  redirectURL,
-	// 		"client_id":     clientID,
-	// 		"display":       "popup",
-	// 	}},
-	// )
-
 	queryParams := map[string]string{
 		"response_type": "code",
 		"redirect_uri":  redirectURL,
@@ -63,31 +60,73 @@ func (home *HomeController) AuthHandler(c echo.Context) error {
 		"display":       "popup",
 	}
 
-	queryString := ""
-	count := 0
-	for key, val := range queryParams {
-		if count == 0 {
-			queryString = fmt.Sprintf("%s=%s", key, val)
-		} else {
-			queryString = fmt.Sprintf("%s&%s=%s", queryString, key, val)
-		}
-
-		count = count + 1
-	}
+	queryString := utils.URLEncode(queryParams)
 	authURI = fmt.Sprintf("%s?%s", authURI, queryString)
 
-	return c.Render(http.StatusOK, "auth.html", map[string]string{
-		"AuthUri":     authURI,
-		"RedirectUri": redirectURL,
-		"TokenJson":   "i dont know yet",
-	})
+	retAuthRUI := authURI
+	retRedirectURL := redirectURL
+	retTokenJSON := "i dont know"
+	if home.tokenInfo.AccessToken != "" {
+		retAuthRUI = ""
+		retRedirectURL = ""
+		retTokenJSON = home.tokenInfo.AccessToken
+	}
+	retMap := map[string]string{
+		"AuthUri":     retAuthRUI,
+		"RedirectUri": retRedirectURL,
+		"TokenJson":   retTokenJSON,
+	}
+
+	return c.Render(http.StatusOK, "auth.html", retMap)
 }
 
 // AuthCallbackHandler handles `/auth/callback`
 func (home *HomeController) AuthCallbackHandler(c echo.Context) error {
 	code := c.QueryParam("code")
-	fmt.Printf("===>Code is %s\n", code)
+	server := config.Config()["server"]
+	redirectURL := config.Config()["redirectUrl"]
+
+	authURI := fmt.Sprintf("%s/restapi/oauth/token", server)
+	apiKey := fmt.Sprintf("%s:%s", config.Config()["clientId"], config.Config()["clientSecret"])
+	apiKey = base64.StdEncoding.EncodeToString([]byte(apiKey))
+	authHeader := fmt.Sprintf("Basic %s", apiKey)
+
+	res, err := requests.Post(authURI, &requests.RequestOptions{
+		Data: map[string]string{
+			"grant_type":   "authorization_code",
+			"code":         code,
+			"redirect_uri": redirectURL,
+		},
+		Headers: map[string]string{
+			"Authorization": authHeader,
+			"Accept":        "application/json",
+			"Content-Type":  "application/x-www-form-urlencoded",
+		},
+	})
+
+	if err != nil || res.Ok != true {
+		fmt.Printf("ERROR for request token %v, res: %s\n", err, res.String())
+	}
 
 	// TODO: Now we have code, let's request token
-	return c.String(http.StatusOK, code)
+	resString := res.String()
+	authInfo := &models.AuthInfo{}
+	res.JSON(authInfo)
+	home.tokenInfo = *authInfo
+
+	fmt.Printf("res ===> %s\n", resString)
+
+	return c.String(http.StatusOK, resString)
+
+	// return c.Render(http.StatusOK, "home.html", map[string]string{
+	// 	"Title":     "Home Page",
+	// 	"NeedLogin": "No",
+	// 	"Data":      res.String(),
+	// })
+
+	// return c.Render(http.StatusOK, "auth.html", map[string]string{
+	// 	"AuthUri":     "",
+	// 	"RedirectUri": "",
+	// 	"TokenJson":   resString,
+	// })
 }
