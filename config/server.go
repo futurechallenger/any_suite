@@ -1,3 +1,6 @@
+// TODO: access clientId & client secret from env
+// https://gobyexample.com/environment-variables
+
 package config
 
 import (
