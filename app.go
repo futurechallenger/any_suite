@@ -21,6 +21,9 @@ func main() {
 	// Used with run commana, go run app.go -env debug
 	config.SetBuildEnv(flag.String("env", "debug", "runing in env `debug` or `release`"))
 
+	// Start DB
+	// data.NewIntEcoDB()
+
 	// Echo instance
 	e := echo.New()
 
