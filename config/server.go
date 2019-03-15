@@ -6,6 +6,7 @@ package config
 
 import (
 	"int_ecosys/utils"
+	"os"
 )
 
 func isDebug(env string) func() bool {
@@ -23,8 +24,8 @@ func Config() map[string]string {
 	redirectURL, _ := utils.Condition(isDebug(env),
 		"http://localhost:1323/auth/callback",
 		"").(string)
-	clientID, _ := utils.Condition(isDebug(env), "ohnIbGTJTt-0CWB48kbNjQ", "").(string)
-	clientSecret, _ := utils.Condition(isDebug(env), "4cVng-HjSvGkVMY9Ips79AbOA5Eg7CRKyD9vqYyK0bxg", "").(string)
+	clientID, _ := utils.Condition(isDebug(env), os.Getenv("INTECO_DEV_CLIENT_ID"), "").(string)
+	clientSecret, _ := utils.Condition(isDebug(env), os.Getenv("INTECO_DEV_CLIENT_SECRET"), "").(string)
 	return map[string]string{
 		"server":       server,
 		"redirectUrl":  redirectURL,
