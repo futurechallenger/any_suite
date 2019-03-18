@@ -1,6 +1,11 @@
 package data
 
-import "testing"
+import (
+	"database/sql"
+	"testing"
+
+	_ "github.com/go-sql-driver/mysql"
+)
 
 func TestNewIntEcoDB(t *testing.T) {
 	if db := NewIntEcoDB(); db == nil {
@@ -28,8 +33,18 @@ func TestConn(t *testing.T) {
 		}
 	}()
 
-	database := NewIntEcoDB()
-	database.Conn()
+	// database := NewIntEcoDB()
+	// database.Conn()
+
+	conn, err := sql.Open("mysql", "root:123456@tcp(172.17.0.2:3306)/inteco")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	err = conn.Ping()
+	if err != nil {
+		panic(err.Error())
+	}
 }
 func TestCreateTable(t *testing.T) {
 	defer func() {

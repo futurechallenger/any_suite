@@ -45,8 +45,13 @@ func (database *IntEcoDB) Conn() {
 		fmt.Printf("Connect to db error %v\n", err)
 		panic(err.Error())
 	}
+	defer db.Close()
 
-	db.Ping()
+	if err = db.Ping(); err != nil {
+		fmt.Printf("ping db error %v\n", err)
+		panic(err.Error())
+	}
+
 	database.db = db
 }
 
