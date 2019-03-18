@@ -36,7 +36,7 @@ func TestConn(t *testing.T) {
 	// database := NewIntEcoDB()
 	// database.Conn()
 
-	conn, err := sql.Open("mysql", "root:123456@tcp(172.17.0.2:3306)/inteco")
+	conn, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:7002)/inteco")
 	if err != nil {
 		panic(err.Error())
 	}

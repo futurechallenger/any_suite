@@ -40,7 +40,7 @@ func (database *IntEcoDB) Close() {
 
 // Conn connect to mysql database
 func (database *IntEcoDB) Conn() {
-	db, err := sql.Open("mysql", "root:123456@tcp(172.17.0.2:3306)/inteco")
+	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:7002)/inteco")
 	if err != nil {
 		fmt.Printf("Connect to db error %v\n", err)
 		panic(err.Error())
