@@ -169,7 +169,9 @@ func (database *IntEcoDB) CreateTokenTable(tableName string) {
 		// return err
 		panic(err)
 	}
-	// defer stmt.Close()
+	// TODO: this may be a problem, if we just keep closing db connection
+	// When a function is done. Let's improve this by setting those
+	// `Max connection number`, `Max idle connections` properties
 	defer database.Close()
 
 	_, err = stmt.Exec()
