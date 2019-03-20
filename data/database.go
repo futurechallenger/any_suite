@@ -45,14 +45,28 @@ func (database *IntEcoDB) Conn() {
 		fmt.Printf("Connect to db error %v\n", err)
 		panic(err.Error())
 	}
-	defer db.Close()
+	// defer db.Close()
 
 	if err = db.Ping(); err != nil {
-		fmt.Printf("ping db error %v\n", err)
+		fmt.Printf("ping db err %v\n", err)
 		panic(err.Error())
 	}
 
 	database.db = db
+}
+
+// Closed return if the db connection is closed
+func (database *IntEcoDB) Closed() bool {
+	if database.db == nil {
+		return true
+	}
+
+	err, _ := database.db.Exec("DO 1")
+	if err != nil {
+		return true
+	}
+
+	return false
 }
 
 // DBExists check if db exists
@@ -89,7 +103,7 @@ func (database *IntEcoDB) TableExists(tableName string) bool {
 // create table statement
 func (database *IntEcoDB) generateCreateSQL(tableName string) string {
 	pk := "`id` int(64) unsigned PRIMARY KEY AUTO_INCREMENT"
-	accessToken := "`access_token varchar(50)"
+	accessToken := "`access_token` varchar(50)"
 	expiresIn := "`expires_in` timestamp not null"
 	refreshToken := "`refresh_token` varchar(50)"
 	refreshTokenExpiresIn := "`refresh_token_expires_in` timestamp"
@@ -103,14 +117,17 @@ func (database *IntEcoDB) generateCreateSQL(tableName string) string {
 		expiresIn, refreshToken,
 		refreshTokenExpiresIn,
 		scope, ownerID, endPointID)
-	createState := fmt.Sprintf("DROP TABLE IF EXISTS `%s`; %s", tableName, createSQL)
+	// createState := fmt.Sprintf("DROP TABLE IF EXISTS `%s`; %s", tableName, createSQL)
+	createState := fmt.Sprintf("%s", createSQL)
 
 	return createState
 }
 
 // CreateTokenTable if the db is first initialized
 func (database *IntEcoDB) CreateTokenTable(tableName string) {
-	database.Conn()
+	if database.db == nil || database.Closed() {
+		database.Conn()
+	}
 
 	createState := database.generateCreateSQL(tableName)
 	stmt, err := database.db.Prepare(createState)

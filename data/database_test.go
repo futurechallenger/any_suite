@@ -1,7 +1,6 @@
 package data
 
 import (
-	"database/sql"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -21,7 +20,7 @@ func TestSQLStatement(t *testing.T) {
 
 	const TableName = "token_info"
 	sql := database.generateCreateSQL(TableName)
-	if sql != "DROP TABLE IF EXISTS `token_info`; CREATE TABLE `token_info`(`id` int(64) unsigned PRIMARY KEY AUTO_INCREMENT,`access_token varchar(50),`expires_in` timestamp not null,`refresh_token` varchar(50),`refresh_token_expires_in` timestamp,`scope` VARCHAR(255),`owner_id` varchar(100),`endpoint_id` varchar(100));" {
+	if sql != "DROP TABLE IF EXISTS `token_info`; CREATE TABLE `token_info`(`id` int(64) unsigned PRIMARY KEY AUTO_INCREMENT,`access_token` varchar(50),`expires_in` timestamp not null,`refresh_token` varchar(50),`refresh_token_expires_in` timestamp,`scope` VARCHAR(255),`owner_id` varchar(100),`endpoint_id` varchar(100));" {
 		t.Errorf("Create statement error: %s\n", sql)
 	}
 }
@@ -33,23 +32,24 @@ func TestConn(t *testing.T) {
 		}
 	}()
 
-	// database := NewIntEcoDB()
-	// database.Conn()
+	database := NewIntEcoDB()
+	database.Conn()
 
-	conn, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:7002)/inteco")
-	if err != nil {
-		panic(err.Error())
-	}
+	// conn, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:7002)/inteco")
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 
-	err = conn.Ping()
-	if err != nil {
-		panic(err.Error())
-	}
+	// err = conn.Ping()
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 }
 func TestCreateTable(t *testing.T) {
 	defer func() {
-		if err := recover(); err != nil {
-			t.Error("Open db error")
+		err := recover()
+		if err != nil {
+			t.Errorf("Open db error %v\n", err)
 		}
 	}()
 
