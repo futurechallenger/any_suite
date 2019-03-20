@@ -15,6 +15,8 @@ import (
 	requests "github.com/levigross/grequests"
 )
 
+// TODO: refactor this to `AuthController`
+
 // HomeController handle user's upload
 type HomeController struct {
 	tokenInfo models.AuthInfo
