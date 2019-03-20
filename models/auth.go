@@ -7,4 +7,7 @@ type AuthInfo struct {
 	RefreshToken          string `json:"refresh_token"`
 	ExpiresIn             int32  `json:"expires_in"`
 	RefreshTokenExpiresIn int32  `json:"refresh_token_expires_in"`
+	Scope                 string `json:"scope"`
+	OwnerID               string `json:"owner_id"`
+	EndPointID            string `json:"endpoint_id"`
 }

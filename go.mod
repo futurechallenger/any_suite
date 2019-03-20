@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/echo/v4 v4.0.0
