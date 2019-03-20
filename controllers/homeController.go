@@ -114,6 +114,14 @@ func (home *HomeController) AuthCallbackHandler(c echo.Context) error {
 	res.JSON(authInfo)
 	home.tokenInfo = *authInfo
 
+	// Store token info
+	// TODO: maybe use channel to make this quicker
+	rowID, err := services.StoreAuthInfo(authInfo)
+	if err != nil {
+		fmt.Printf("Error to store auth info")
+	}
+	fmt.Printf("Auth info stored in row ID: %d\n", rowID)
+
 	fmt.Printf("res ===> %s\n", resString)
 
 	return c.String(http.StatusOK, resString)

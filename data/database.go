@@ -4,7 +4,9 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"int_ecosys/models"
 
 	// Register mysql driver
 	_ "github.com/go-sql-driver/mysql"
@@ -15,13 +17,42 @@ type IntEcoDB struct {
 	db *sql.DB
 }
 
-// func (db *IntEcoDB) storeToken(tokenInfo *models.AuthInfo) error {
+// StoreToken stores auth info including auth token and refresh token, etc.
+func (database *IntEcoDB) StoreToken(tokenInfo *models.AuthInfo) (rowID int64, err error) {
+	if tokenInfo == nil {
+		return -1, errors.New("tokenInfo is invalid")
+	}
 
-// }
+	const insertStatement = `insert into token_info (
+			access_token, expires_in, refresh_token,
+			refresh_token_expires_in, scope, owner_id, 
+			endpoint_id
+		) values (?,?,?,?,?,?,?)`
+	stmt, err := database.db.Prepare(insertStatement)
+	if err != nil {
+		return -1, err
+	}
+	defer stmt.Close()
 
-// func (db *IntEcoDB) getToken() (info models.AuthInfo, err error) {
+	r, insertErr := stmt.Exec(tokenInfo.AccessToken, tokenInfo.ExpiresIn,
+		tokenInfo.RefreshToken, tokenInfo.RefreshTokenExpiresIn,
+		tokenInfo.Scope, tokenInfo.OwnerID, tokenInfo.EndPointID)
 
-// }
+	if insertErr != nil {
+		return -1, err
+	}
+
+	insertRowID, rowErr := r.LastInsertId()
+	if rowErr != nil {
+		return -1, fmt.Errorf("Can not get ID of inserted row, ERROR: %v", rowErr)
+	}
+
+	return insertRowID, nil
+}
+
+// TODO: get token by what? `owner_id` or anything else?
+// func (database *IntEcoDB) getToken() (info models.AuthInfo, err error) {
+//}
 
 // NewIntEcoDB create new db instance
 func NewIntEcoDB() (dbInstance *IntEcoDB) {
