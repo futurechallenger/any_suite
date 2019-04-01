@@ -8,9 +8,9 @@ import (
 )
 
 func parepare() (docker string, err error) {
-	buff, err := ioutil.ReadFile("./docker-template")
+	buff, err := ioutil.ReadFile("docker_template")
 	if err != nil {
-		return nil, fmt.Errorf("read file error %v\n", err)
+		return "", fmt.Errorf("read file error %v", err)
 	}
 
 	ret := string(buff)
@@ -29,15 +29,15 @@ func GenerateDockerfile() error {
 		return err
 	}
 
-	f, err := os.Create("./Dockerfile")
+	f, err := os.Create("Dockerfile")
 	if err != nil {
-		return fmt.Errorf("Create `Dockerfile` error %v\n", ferr)
+		return fmt.Errorf("Create `Dockerfile` error %v", err)
 	}
 	defer f.Close()
 
-	_, err := f.WriteString(ret)
+	_, err = f.WriteString(ret)
 	if err != nil {
-		return fmt.Errorf("Write string to `Dockerfile` error %v\n", err)
+		return fmt.Errorf("Write string to `Dockerfile` error %v", err)
 	}
 
 	f.Sync()
