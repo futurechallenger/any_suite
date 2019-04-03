@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -17,6 +18,9 @@ func parepare() (docker string, err error) {
 
 	// Replace placeholders
 	repo := os.Getenv("GIT_REPO_PATH")
+	for _, e := range os.Environ() {
+		fmt.Printf("ENV %v\n", e)
+	}
 	dockerFile := strings.ReplaceAll(ret, "{{GIT_REPO_PATH}}", repo)
 
 	return dockerFile, nil
@@ -43,4 +47,11 @@ func GenerateDockerfile() error {
 	f.Sync()
 
 	return nil
+}
+
+// CreateImage creates docker image from `Dockerfile`
+func CreateImage() (string, error) {
+	out, err := exec.Command("docker", "build", "-t", "wrapper:0.1.6", ".").Output()
+
+	return string(out), err
 }
