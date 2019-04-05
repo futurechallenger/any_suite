@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 )
@@ -38,7 +39,11 @@ func (uploader *UploadController) storeFile(file *multipart.FileHeader) error {
 	}
 	defer src.Close()
 
-	dst, err := os.Create(file.Filename)
+	storePath, err := filepath.Abs(fmt.Sprintf("./store/%s", file.Filename))
+	if err != nil {
+		return fmt.Errorf("Get store path error %v", err)
+	}
+	dst, err := os.Create(storePath)
 	if err != nil {
 		return err
 	}
