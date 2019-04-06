@@ -6,10 +6,5 @@ debug.test
 data/debug.test
 
 docker_utils/Dockerfile
-config.json
 
-store
-sample_scripts
 config.json
-
-Dragon
