@@ -1,3 +1,3 @@
 TODO:
 
-- [ ] Memory queue or throttle
+- [ ] Memory queue
