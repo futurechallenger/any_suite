@@ -22,8 +22,6 @@ type HomeController struct {
 
 // ContainerHandler will handle user's upload
 func (home *HomeController) ContainerHandler(c echo.Context) error {
-	fmt.Println("Hello Uploader")
-
 	container := &services.Container{}
 	container.CheckInstalled()
 
