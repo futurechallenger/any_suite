@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"int_ecosys/models"
 	"int_ecosys/services"
 	"io"
 	"mime/multipart"
@@ -38,6 +37,8 @@ func (uploader *UploadController) UploadHandler(c echo.Context) error {
 	if err := uploader.storeFile(file); err != nil {
 		return err
 	}
+	// Execute runner
+	services.Run()
 
 	return c.HTML(http.StatusOK,
 		fmt.Sprintf("<p>File %s uploaded successfully with fields.</p>",
