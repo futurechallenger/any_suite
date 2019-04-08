@@ -92,7 +92,7 @@ func (uploader *UploadController) storeFile(file *multipart.FileHeader) error {
 	}
 	defer src.Close()
 
-	storePath, err := filepath.Abs(fmt.Sprintf("./store/tmp/%s", file.Filename))
+	storePath, err := filepath.Abs(fmt.Sprintf("./store/temp/%s", file.Filename))
 	if err != nil {
 		return fmt.Errorf("Get store path error %v", err)
 	}
