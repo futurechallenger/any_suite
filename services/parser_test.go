@@ -63,8 +63,10 @@ func TestGetFuncName(t *testing.T) {
 func TestFileContent(t *testing.T) {
 	const (
 		header  = "module.exports = {"
-		content = "function yo(name) {\nreturn `yo ${name}!`\n}"
-		footer  = "}"
+		content = `function yo(name) {
+			return "yo " + name!";
+		}`
+		footer = "}"
 	)
 
 	var builder strings.Builder
