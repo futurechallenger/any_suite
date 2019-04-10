@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -37,4 +38,16 @@ func TestParser(t *testing.T) {
 			return
 		}
 	}
+}
+
+func TestFileContent(t *testing.T) {
+	const (
+		header  = "module.exports = {"
+		content = "function yo(name) {return `yo ${name}!`}"
+		footer  = "}"
+	)
+
+	var builder strings.Builder
+	builder.WriteString(header)
+
 }
