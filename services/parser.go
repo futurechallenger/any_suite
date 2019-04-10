@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 // Parser parse uploaded scripts
@@ -73,7 +75,22 @@ func (p *Parser) processFile(file os.FileInfo) error {
 	}
 
 	raw := string(buff) // File content
-	_, err = f.WriteString(raw)
+	lines := strings.Split(raw, "\n")
+
+	var builder strings.Builder
+	reg, _ := regexp.Compile(`^function\s[A-Za-z0-9]+\s*\([A-Za-z0-9\s,]*\)\s+\{`)
+	for _, l := range lines {
+		var funName string
+		if reg.MatchString(l) {
+			funName = l[len("function"):len(l)]
+			funName = strings.TrimLeft(l, " ")
+			builder.WriteString(funName)
+		} else {
+			builder.WriteString(l)
+		}
+	}
+
+	_, err = f.WriteString(builder.String())
 
 	if err != nil {
 		return fmt.Errorf("Write file: %s error %v", fileName, err)
