@@ -28,7 +28,7 @@ func (uploader *UploadController) UploadHandler(c echo.Context) error {
 		return err
 	}
 	// Execute runner
-	services.Run()
+	services.RunParser()
 
 	return c.HTML(http.StatusOK,
 		fmt.Sprintf("<p>File %s uploaded successfully with fields.</p>",
