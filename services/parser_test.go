@@ -60,6 +60,11 @@ func TestGetFuncName(t *testing.T) {
 	}
 }
 
+// func TestProcessFuncName(t *testing.T) {
+// 	content := "function yo(name) {\nreturn `yo ${name}!`\n}"
+
+// }
+
 func TestFileContent(t *testing.T) {
 	const (
 		header  = "module.exports = {"
