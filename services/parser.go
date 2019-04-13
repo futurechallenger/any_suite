@@ -45,7 +45,7 @@ func NewParser(sourceDir string, destDir string) (p *Parser, err error) {
 }
 
 // RunParser start parse uploaded scripts
-func (p *Parser) RunParser(uploadedPath string) error {
+func (p *Parser) RunParser() error {
 	files, err := ioutil.ReadDir(p.sourceDir)
 	if err != nil {
 		return err
