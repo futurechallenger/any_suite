@@ -15,7 +15,8 @@ import (
 // No sub directories in uploaded scripts
 // NOTE:
 // 1. Check if the file is `.js`
-// 2. Put all code in one file maybe the best way
+// 2. Put all code in one file maybe the best way, what about the name conflicts
+// 3. Upload multiple files one time
 type Parser struct {
 	sourceDir string
 	destDir   string
