@@ -8,3 +8,5 @@ data/debug.test
 docker_utils/Dockerfile
 
 store
+
+sample_scripts
