@@ -60,10 +60,30 @@ func TestGetFuncName(t *testing.T) {
 	}
 }
 
-// func TestProcessFuncName(t *testing.T) {
-// 	content := "function yo(name) {\nreturn `yo ${name}!`\n}"
+func TestFileExt(t *testing.T) {
+	const (
+		rightFile  = "Hello.js"
+		wrongFile  = "hello.txt"
+		wrongFile2 = "bro"
+	)
 
-// }
+	p, err := NewParser("", "")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if ok, err := p.checkFileExt(rightFile, ""); ok == false || err != nil {
+		t.Error("Should be right")
+	}
+
+	if ok, err := p.checkFileExt(wrongFile, ""); ok == true || err != nil {
+		t.Error("Should be right")
+	}
+
+	if ok, err := p.checkFileExt(wrongFile2, ""); ok == true || err != nil {
+		t.Error("Should be right")
+	}
+}
 
 func TestFileContent(t *testing.T) {
 	const (
