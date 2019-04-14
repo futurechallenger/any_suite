@@ -57,7 +57,8 @@ func (p *Parser) RunParser() error {
 		err = p.processFile(file)
 		// Stops at the first error
 		if err != nil {
-			return err
+			fmt.Printf("ERROR: %v\n", err)
+			continue
 		}
 	}
 
@@ -81,6 +82,12 @@ func (p *Parser) checkFileExt(fileName string, fileExt string) (bool, error) {
 // processFile process files
 func (p *Parser) processFile(file os.FileInfo) error {
 	fileName := file.Name()
+
+	ok, _ := p.checkFileExt(fileName, "")
+	if ok == false {
+		return fmt.Errorf("This file `%s` is not the type is suppposed to be", fileName)
+	}
+
 	buff, err := ioutil.ReadFile(fileName)
 	fmt.Printf("file name: %s\n", string(buff))
 
