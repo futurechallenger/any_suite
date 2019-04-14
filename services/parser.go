@@ -13,6 +13,8 @@ import (
 // Uploaded scripts are required to compose like every function
 // are in `global` scope.
 // No sub directories in uploaded scripts
+// NOTE:
+// 1. Check if the file is `.js`
 type Parser struct {
 	sourceDir string
 	destDir   string
@@ -60,6 +62,20 @@ func (p *Parser) RunParser() error {
 	}
 
 	return nil
+}
+
+// checkFileExt checks file's extenstion is equals to the given one
+// Default is `.js`
+func (p *Parser) checkFileExt(fileName string, fileExt string) (bool, error) {
+	if fileName == "" {
+		return false, fmt.Errorf("`fileName` is invalid")
+	}
+
+	if fileExt == "" {
+		fileExt = "js"
+	}
+
+	return strings.Index(fileName, fileExt) >= 0, nil
 }
 
 // processFile process files
