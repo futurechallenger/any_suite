@@ -52,3 +52,5 @@ func main() {
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }
+
+// TODO: Add upload indicator to handle upload success or failure
