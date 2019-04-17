@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"fmt"
+	"int_ecosys/models"
+	"int_ecosys/services"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -15,14 +17,24 @@ import (
 type UploadController struct {
 }
 
-// UploadHandler will handle user's upload
+// UploadHandler will handle user's upload.
+// Accept mutiple files upload
+// 1. Store uploaded scripts
+// 2. Process these scripts, when the complete uploading api is called
+// 3. Run docker
+// TODO:
+// 1. Process files need to add require in these scripts according to some conditionn
 func (uploader *UploadController) UploadHandler(c echo.Context) error {
-	fmt.Println("Hello Uploader")
+	fmt.Printf("Hello Uploader %v\n", c.Request())
+	fileType := c.FormValue("type")
 	file, err := c.FormFile("file")
 	if err != nil {
 		return err
 	}
 
+	fmt.Printf("==>Upload type: %s, file name: %s\n", fileType, file.Filename)
+
+	// Store files
 	if err := uploader.storeFile(file); err != nil {
 		return err
 	}
@@ -32,6 +44,46 @@ func (uploader *UploadController) UploadHandler(c echo.Context) error {
 			file.Filename))
 }
 
+// UploadCompleteHandler indicates that upload of all files are done
+func (uploader *UploadController) UploadCompleteHandler(c echo.Context) error {
+	var errorMessage string
+	ret := models.Ret{
+		Status:  "200",
+		Message: "Done",
+	}
+	// Process files
+	parser, err := services.NewParser("", "")
+	if err != nil {
+		errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
+		ret.Status = "400"
+		ret.Message = errorMessage
+
+		return c.JSON(http.StatusOK, ret)
+	}
+
+	err = parser.RunParser()
+	if err != nil {
+		errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
+		ret.Status = "400"
+		ret.Message = errorMessage
+
+		return c.JSON(http.StatusOK, ret)
+	}
+
+	// Execute runner
+	err = services.Run()
+	if err != nil {
+		errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
+		ret.Status = "400"
+		ret.Message = errorMessage
+
+		return c.JSON(http.StatusOK, ret)
+	}
+
+	return c.JSON(http.StatusOK, ret)
+}
+
+// TODO: move this function to services
 func (uploader *UploadController) storeFile(file *multipart.FileHeader) error {
 	src, err := file.Open()
 	if err != nil {
@@ -39,7 +91,7 @@ func (uploader *UploadController) storeFile(file *multipart.FileHeader) error {
 	}
 	defer src.Close()
 
-	storePath, err := filepath.Abs(fmt.Sprintf("./store/%s", file.Filename))
+	storePath, err := filepath.Abs(fmt.Sprintf("./store/tmp/%s", file.Filename))
 	if err != nil {
 		return fmt.Errorf("Get store path error %v", err)
 	}

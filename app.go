@@ -48,7 +48,10 @@ func main() {
 
 	e.GET("/docker/install", home.ContainerHandler)
 	e.POST("/upload", uploader.UploadHandler)
+	e.POST("/upload/ret", uploader.UploadCompleteHandler)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }
+
+// TODO: Add upload indicator to handle upload success or failure
