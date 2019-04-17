@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"int_ecosys/models"
 	"int_ecosys/services"
 	"io"
 	"mime/multipart"
@@ -24,7 +25,7 @@ type UploadController struct {
 // 1. Process files need to add require in these scripts according to some conditionn
 func (uploader *UploadController) UploadHandler(c echo.Context) error {
 	fmt.Printf("Hello Uploader %v\n", c.Request())
-	fileType := c.FormValue("type")
+	// TODO: fileType := c.FormValue("type")
 	file, err := c.FormFile("file")
 	if err != nil {
 		return err
@@ -100,7 +101,7 @@ func (uploader *UploadController) storeFile(file *multipart.FileHeader) error {
 	}
 	defer src.Close()
 
-	storePath, err := filepath.Abs(fmt.Sprintf("./store/temp/%s", file.Filename))
+	storePath, err := filepath.Abs(fmt.Sprintf("./store/tmp/%s", file.Filename))
 	if err != nil {
 		return fmt.Errorf("Get store path error %v", err)
 	}

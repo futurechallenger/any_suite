@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -26,7 +27,7 @@ type Parser struct {
 func NewParser(sourceDir string, destDir string) (p *Parser, err error) {
 	var source string
 	if sourceDir == "" {
-		dir, err := filepath.Abs("../store/tmp")
+		dir, err := filepath.Abs("./store/tmp")
 		if err != nil {
 			return nil, err
 		}
@@ -35,7 +36,7 @@ func NewParser(sourceDir string, destDir string) (p *Parser, err error) {
 
 	var dest string
 	if destDir == "" {
-		dir, err := filepath.Abs("../store")
+		dir, err := filepath.Abs("./store")
 		if err != nil {
 			return nil, err
 		}
@@ -56,6 +57,7 @@ func (p *Parser) RunParser() error {
 	}
 
 	for _, file := range files {
+		fmt.Printf("File name: %v\n", file.Name())
 		err = p.processFile(file)
 		// Stops at the first error
 		if err != nil {
@@ -90,17 +92,19 @@ func (p *Parser) processFile(file os.FileInfo) error {
 		return fmt.Errorf("This file `%s` is not the type is suppposed to be", fileName)
 	}
 
-	buff, err := ioutil.ReadFile(fileName)
-	fmt.Printf("file name: %s\n", string(buff))
+	buff, err := ioutil.ReadFile(path.Join(p.sourceDir, fileName))
+	// fmt.Printf("file content: %s\n", string(buff))
 
 	// Create file in destination directory
-	f, err := os.Create(fmt.Sprintf("%s/%s", p.destDir, file.Name()))
+	f, err := os.Create(path.Join(p.destDir, file.Name()))
 	if err != nil {
 		return fmt.Errorf("Create file: %s error %v", fileName, err)
 	}
 
 	raw := string(buff) // File content
 	lines := strings.Split(raw, "\n")
+
+	fmt.Printf("File Content : %s\n", raw)
 
 	var builder strings.Builder
 	reg, _ := regexp.Compile(`^function\s[A-Za-z0-9]+\s*\([A-Za-z0-9\s,]*\)\s+\{`)

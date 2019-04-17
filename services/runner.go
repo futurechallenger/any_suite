@@ -11,7 +11,7 @@ var holder = make(chan string, 1)
 func Run() error {
 	holder <- "start"
 
-	out, err := exec.Command("sh", "-c", "../Dragon -c=./config.json").CombinedOutput()
+	out, err := exec.Command("sh", "-c", "./Dragon -c=./config.json").CombinedOutput()
 	fmt.Printf("Dragon output : %v", string(out))
 	if err != nil {
 		<-holder
