@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"int_ecosys/models"
 	"int_ecosys/services"
 	"io"
 	"mime/multipart"
@@ -45,20 +46,41 @@ func (uploader *UploadController) UploadHandler(c echo.Context) error {
 
 // UploadCompleteHandler indicates that upload of all files are done
 func (uploader *UploadController) UploadCompleteHandler(c echo.Context) error {
+	var errorMessage string
+	ret := models.Ret{
+		Status:  "200",
+		Message: "Done",
+	}
 	// Process files
 	parser, err := services.NewParser("", "")
 	if err != nil {
-		return fmt.Errorf("Process uploaded files error %v", err)
+		errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
+		ret.Status = "400"
+		ret.Message = errorMessage
+
+		return c.JSON(http.StatusOK, ret)
 	}
+
 	err = parser.RunParser()
 	if err != nil {
-		return fmt.Errorf("Process uploaded files error %v", err)
+		errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
+		ret.Status = "400"
+		ret.Message = errorMessage
+
+		return c.JSON(http.StatusOK, ret)
 	}
 
 	// Execute runner
-	services.Run()
+	err = services.Run()
+	if err != nil {
+		errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
+		ret.Status = "400"
+		ret.Message = errorMessage
 
-	return c.String(http.StatusOK, "Upload done")
+		return c.JSON(http.StatusOK, ret)
+	}
+
+	return c.JSON(http.StatusOK, ret)
 }
 
 // TODO: move this function to services
