@@ -26,7 +26,7 @@ type Parser struct {
 func NewParser(sourceDir string, destDir string) (p *Parser, err error) {
 	var source string
 	if sourceDir == "" {
-		dir, err := filepath.Abs("../store/temp")
+		dir, err := filepath.Abs("../store/tmp")
 		if err != nil {
 			return nil, err
 		}
