@@ -10,6 +10,7 @@ docker_utils/Dockerfile
 config.json
 
 Dragon
+Dockerfile
 
 store
 sample_scripts
