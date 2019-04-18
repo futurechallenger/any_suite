@@ -19,8 +19,6 @@ type UploadController struct {
 
 // UploadHandler will handle user's upload
 // 1. Store uploaded scripts
-// 2. Process these scripts
-// 3. Run docker
 // TODO:
 // 1. Process files need to add require in these scripts according to some conditionn
 func (uploader *UploadController) UploadHandler(c echo.Context) error {
@@ -36,31 +34,20 @@ func (uploader *UploadController) UploadHandler(c echo.Context) error {
 		return err
 	}
 
-	// Process files
-	parser, err := services.NewParser("", "")
-	if err != nil {
-		return fmt.Errorf("Process uploaded files error %v", err)
-	}
-	err = parser.RunParser()
-	if err != nil {
-		return fmt.Errorf("Process uploaded files error %v", err)
-	}
-
-	// Execute runner
-	services.Run()
-
 	return c.HTML(http.StatusOK,
 		fmt.Sprintf("<p>File %s uploaded successfully with fields.</p>",
 			file.Filename))
 }
 
 // UploadCompleteHandler indicates that upload of all files are done
+// This api is called by client to tell server all files are uploaded
 func (uploader *UploadController) UploadCompleteHandler(c echo.Context) error {
 	var errorMessage string
 	ret := models.Ret{
 		Status:  "200",
 		Message: "Done",
 	}
+
 	// Process files
 	parser, err := services.NewParser("", "")
 	if err != nil {
