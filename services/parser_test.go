@@ -50,6 +50,14 @@ func TestFindJsFuncName(t *testing.T) {
 	if matched == false {
 		t.Error("Not matched function")
 	}
+
+	fn := `function aaa(p1, p2) {`
+	ret := fn[len("function"):len(fn)]
+	ret = strings.TrimLeft(ret, " ")
+
+	if ret != "aaa" {
+		t.Error("Retrive function name error")
+	}
 }
 
 func TestGetFuncName(t *testing.T) {

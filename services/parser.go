@@ -11,13 +11,6 @@ import (
 )
 
 // Parser parse uploaded scripts
-// Uploaded scripts are required to compose like every function
-// are in `global` scope.
-// No sub directories in uploaded scripts
-// NOTE:
-// 1. Check if the file is `.js`
-// 2. Put all code in one file maybe the best way, what about the name conflicts
-// 3. Upload multiple files one time
 type Parser struct {
 	sourceDir string
 	destDir   string
@@ -64,6 +57,7 @@ func (p *Parser) RunParser() error {
 	if err != nil {
 		return fmt.Errorf("Create dest file: %s error %v", destFileName, err)
 	}
+	f.WriteString("module.exports = {\n")
 
 	for _, file := range files {
 		fmt.Printf("File name: %v\n", file.Name())
@@ -74,6 +68,8 @@ func (p *Parser) RunParser() error {
 			continue
 		}
 	}
+
+	f.WriteString("}\n")
 
 	return nil
 }
@@ -109,19 +105,25 @@ func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 	fmt.Printf("File Content : %s\n", raw)
 
 	var builder strings.Builder
+	// TODO: Parse with AST tree in node
+	// Or code like inner function can be a problem
 	reg, _ := regexp.Compile(`^function\s[A-Za-z0-9]+\s*\([A-Za-z0-9\s,]*\)\s+\{`)
 	for _, l := range lines {
-		var funName string
+		fmt.Printf("O LINE: %s\n", l)
+
+		var fn string
 		if reg.MatchString(l) {
-			funName = l[len("function"):len(l)]
-			funName = strings.TrimLeft(l, " ")
-			builder.WriteString(funName)
+			fn = l[len("function"):len(l)]
+			fn = strings.TrimLeft(fn, " ")
+			builder.WriteString(fn)
 		} else {
 			builder.WriteString(l)
 		}
 	}
 	builder.WriteString("\n")
 
+	to := builder.String()
+	fmt.Printf("LINE: %s\n", to)
 	_, err = f.WriteString(builder.String())
 
 	if err != nil {
