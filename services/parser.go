@@ -56,9 +56,18 @@ func (p *Parser) RunParser() error {
 		return err
 	}
 
+	// Prepare to parse files
+	// Create dest file here if it does not exist
+	// Create file in destination directory
+	const destFileName = "dest.js"
+	f, err := os.Create(path.Join(p.destDir, destFileName))
+	if err != nil {
+		return fmt.Errorf("Create dest file: %s error %v", destFileName, err)
+	}
+
 	for _, file := range files {
 		fmt.Printf("File name: %v\n", file.Name())
-		err = p.processFile(file)
+		err = p.processFile(f, file)
 		// Stops at the first error
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
@@ -84,7 +93,7 @@ func (p *Parser) checkFileExt(fileName string, fileExt string) (bool, error) {
 }
 
 // processFile process files
-func (p *Parser) processFile(file os.FileInfo) error {
+func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 	fileName := file.Name()
 
 	ok, _ := p.checkFileExt(fileName, "")
@@ -93,15 +102,8 @@ func (p *Parser) processFile(file os.FileInfo) error {
 	}
 
 	buff, err := ioutil.ReadFile(path.Join(p.sourceDir, fileName))
-	// fmt.Printf("file content: %s\n", string(buff))
-
-	// Create file in destination directory
-	f, err := os.Create(path.Join(p.destDir, file.Name()))
-	if err != nil {
-		return fmt.Errorf("Create file: %s error %v", fileName, err)
-	}
-
-	raw := string(buff) // File content
+	// File content
+	raw := string(buff)
 	lines := strings.Split(raw, "\n")
 
 	fmt.Printf("File Content : %s\n", raw)
@@ -118,6 +120,7 @@ func (p *Parser) processFile(file os.FileInfo) error {
 			builder.WriteString(l)
 		}
 	}
+	builder.WriteString("\n")
 
 	_, err = f.WriteString(builder.String())
 
