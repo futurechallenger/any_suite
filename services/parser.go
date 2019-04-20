@@ -120,7 +120,7 @@ func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 			builder.WriteString(l)
 		}
 	}
-	builder.WriteString("\n")
+	builder.WriteString(",\n")
 
 	to := builder.String()
 	fmt.Printf("LINE: %s\n", to)
@@ -131,4 +131,8 @@ func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 	}
 
 	return nil
+}
+
+func (p *Parser) parseMenfest() error {
+
 }

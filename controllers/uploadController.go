@@ -68,14 +68,14 @@ func (uploader *UploadController) UploadCompleteHandler(c echo.Context) error {
 	}
 
 	// Execute runner
-	// err = services.Run()
-	// if err != nil {
-	// 	errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
-	// 	ret.Status = "400"
-	// 	ret.Message = errorMessage
+	err = services.Run()
+	if err != nil {
+		errorMessage = fmt.Sprintf("Process uploaded files error %v", err)
+		ret.Status = "400"
+		ret.Message = errorMessage
 
-	// 	return c.JSON(http.StatusOK, ret)
-	// }
+		return c.JSON(http.StatusOK, ret)
+	}
 
 	return c.JSON(http.StatusOK, ret)
 }

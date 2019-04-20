@@ -14,3 +14,5 @@ Dockerfile
 
 store
 sample_scripts
+
+services/appmanifest.json
