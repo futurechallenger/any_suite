@@ -120,3 +120,12 @@ func TestFileContent(t *testing.T) {
 		t.Error("Does not generate new content")
 	}
 }
+
+func TestManifestParser(t *testing.T) {
+	parser, _ := NewParser("./", "")
+	err := parser.parseMenfest("appmanifest.json")
+
+	if err != nil {
+		t.Error("Parase manifest error")
+	}
+}

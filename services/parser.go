@@ -1,7 +1,9 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
+	"int_ecosys/models"
 	"io/ioutil"
 	"os"
 	"path"
@@ -133,6 +135,13 @@ func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 	return nil
 }
 
-func (p *Parser) parseMenfest() error {
+// Parse manifest file
+func (p *Parser) parseMenfest(fileName string) error {
+	var m models.Manifest
+	buff, err := ioutil.ReadFile(path.Join(p.sourceDir, fileName))
+	json.Unmarshal(buff, &m)
 
+	fmt.Printf("===>String %s, Manifest: %v\n", string(buff), m)
+
+	return err
 }
