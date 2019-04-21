@@ -12,10 +12,16 @@ import (
 	"strings"
 )
 
+const (
+	// ManifestName name of the app manifest
+	ManifestName = "appmanifest.json"
+)
+
 // Parser parse uploaded scripts
 type Parser struct {
 	sourceDir string
 	destDir   string
+	Manifest  models.Manifest
 }
 
 // NewParser return `Parser` instance
@@ -45,16 +51,37 @@ func NewParser(sourceDir string, destDir string) (p *Parser, err error) {
 }
 
 // RunParser start parse uploaded scripts
+// Parse `manifest` and `code.js` first
 func (p *Parser) RunParser() error {
 	files, err := ioutil.ReadDir(p.sourceDir)
 	if err != nil {
 		return err
 	}
 
+	const (
+		destFileName = "dest.js"
+		entryFile    = "code.js"
+	)
+
+	// Check `manifest`, `code.js` exists
+	// TODO: Check meta files sepeartely
+	// destExists := checkFileExists(files, destFileName, true)
+	// codeExists := checkFileExists(files, entryFile, true)
+
+	// if !destExists || !codeExists {
+	// 	return fmt.Errorf("`appmanifest.json or code.js deso not exist")
+	// }
+
+	// err = p.parseManfest(destFileName)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// TODO: Check if code.js includes all method declared in manifest.json
+
 	// Prepare to parse files
 	// Create dest file here if it does not exist
 	// Create file in destination directory
-	const destFileName = "dest.js"
 	f, err := os.Create(path.Join(p.destDir, destFileName))
 	if err != nil {
 		return fmt.Errorf("Create dest file: %s error %v", destFileName, err)
@@ -74,6 +101,27 @@ func (p *Parser) RunParser() error {
 	f.WriteString("}\n")
 
 	return nil
+}
+
+func checkFileExists(files []os.FileInfo, fn string, full bool) bool {
+	if files == nil {
+		return false
+	}
+
+	if fn == "" {
+		return false
+	}
+
+	for _, fi := range files {
+		fileName := fi.Name()
+		if full == true && fileName == fn {
+			return true
+		} else if full == false && strings.Contains(fileName, fn) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // checkFileExt checks file's extenstion is equals to the given one
@@ -110,16 +158,20 @@ func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 	// TODO: Parse with AST tree in node
 	// Or code like inner function can be a problem
 	reg, _ := regexp.Compile(`^function\s[A-Za-z0-9]+\s*\([A-Za-z0-9\s,]*\)\s+\{`)
+	// function calls, which all the line only contains
+	callReg, _ := regexp.Compile(`^\s*[A-Za-z0-9]+\([\'\"A-Za-z0-9\s,]*\);$`)
 	for _, l := range lines {
 		fmt.Printf("O LINE: %s\n", l)
 
-		var fn string
 		if reg.MatchString(l) {
-			fn = l[len("function"):len(l)]
+			fn := l[len("function"):len(l)]
 			fn = strings.TrimLeft(fn, " ")
-			builder.WriteString(fn)
+			builder.WriteString(fmt.Sprintf("%s\n", fn))
+		} else if callReg.MatchString(l) {
+			fncall := fmt.Sprintf("  this.%s\n", strings.TrimLeft(l, " "))
+			builder.WriteString(fncall)
 		} else {
-			builder.WriteString(l)
+			builder.WriteString(fmt.Sprintf("%s\n", l))
 		}
 	}
 	builder.WriteString(",\n")
@@ -136,12 +188,14 @@ func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 }
 
 // Parse manifest file
-func (p *Parser) parseMenfest(fileName string) error {
+func (p *Parser) parseManfest(fileName string) error {
 	var m models.Manifest
 	buff, err := ioutil.ReadFile(path.Join(p.sourceDir, fileName))
 	json.Unmarshal(buff, &m)
 
 	fmt.Printf("===>String %s, Manifest: %v\n", string(buff), m)
+
+	p.Manifest = m
 
 	return err
 }

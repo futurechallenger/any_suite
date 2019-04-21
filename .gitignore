@@ -10,6 +10,7 @@ docker_utils/Dockerfile
 config.json
 
 Dragon
+app
 Dockerfile
 
 store
