@@ -50,6 +50,14 @@ func TestFindJsFuncName(t *testing.T) {
 	if matched == false {
 		t.Error("Not matched function")
 	}
+
+	fn := `function aaa(p1, p2) {`
+	ret := fn[len("function"):len(fn)]
+	ret = strings.TrimLeft(ret, " ")
+
+	if ret != "aaa" {
+		t.Error("Retrive function name error")
+	}
 }
 
 func TestGetFuncName(t *testing.T) {
@@ -110,5 +118,14 @@ func TestFileContent(t *testing.T) {
 
 	if len(ret) <= 0 {
 		t.Error("Does not generate new content")
+	}
+}
+
+func TestManifestParser(t *testing.T) {
+	parser, _ := NewParser("./", "")
+	err := parser.parseMenfest("appmanifest.json")
+
+	if err != nil {
+		t.Error("Parase manifest error")
 	}
 }
