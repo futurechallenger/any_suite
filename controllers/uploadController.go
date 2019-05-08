@@ -22,7 +22,7 @@ type UploadController struct {
 // TODO:
 // 1. Process files need to add require in these scripts according to some conditionn
 func (uploader *UploadController) UploadHandler(c echo.Context) error {
-	fmt.Printf("Hello Uploader %v\n", c.Request())
+	fmt.Printf("=====>Hello Uploader %v\n", c.Request())
 	// TODO: fileType := c.FormValue("type")
 	file, err := c.FormFile("file")
 	if err != nil {

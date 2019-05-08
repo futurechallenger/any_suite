@@ -1,4 +1,3 @@
-.vscode
 int_ecosys
 debug
 
@@ -15,5 +14,6 @@ Dockerfile
 
 store
 sample_scripts
+docker_template
 
 services/appmanifest.json
