@@ -123,7 +123,7 @@ func TestFileContent(t *testing.T) {
 
 func TestManifestParser(t *testing.T) {
 	parser, _ := NewParser("./", "")
-	err := parser.parseMenfest("appmanifest.json")
+	err := parser.parseManifest("appmanifest.json")
 
 	if err != nil {
 		t.Error("Parase manifest error")
