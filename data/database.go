@@ -3,10 +3,10 @@
 package data
 
 import (
+	"any_suite/models"
 	"database/sql"
 	"errors"
 	"fmt"
-	"int_ecosys/models"
 
 	// Register mysql driver
 	_ "github.com/go-sql-driver/mysql"

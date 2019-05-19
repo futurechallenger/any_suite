@@ -1,4 +1,4 @@
-module int_ecosys
+module any_suite
 
 go 1.12
 

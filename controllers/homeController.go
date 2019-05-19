@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"int_ecosys/config"
-	"int_ecosys/models"
-	"int_ecosys/services"
-	"int_ecosys/utils"
+	"any_suite/config"
+	"any_suite/models"
+	"any_suite/services"
+	"any_suite/utils"
 
 	"github.com/labstack/echo/v4"
 

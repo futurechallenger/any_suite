@@ -1,9 +1,9 @@
 package services
 
 import (
+	"any_suite/data"
+	"any_suite/models"
 	"fmt"
-	"int_ecosys/data"
-	"int_ecosys/models"
 )
 
 // GetAuthInfo get auth token

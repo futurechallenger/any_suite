@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"any_suite/models"
+	"any_suite/services"
 	"fmt"
-	"int_ecosys/models"
-	"int_ecosys/services"
 	"io"
 	"mime/multipart"
 	"net/http"
