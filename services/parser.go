@@ -1,9 +1,9 @@
 package services
 
 import (
+	"any_suite/models"
 	"encoding/json"
 	"fmt"
-	"int_ecosys/models"
 	"io/ioutil"
 	"os"
 	"path"
@@ -19,9 +19,10 @@ const (
 
 // Parser parse uploaded scripts
 type Parser struct {
-	sourceDir string
-	destDir   string
-	Manifest  models.Manifest
+	sourceDir      string
+	destDir        string
+	Manifest       models.Manifest
+	manifestParser *ManifestParser
 }
 
 // NewParser return `Parser` instance
@@ -59,8 +60,9 @@ func (p *Parser) RunParser() error {
 	}
 
 	const (
-		destFileName = "dest.js"
-		entryFile    = "code.js"
+		manifestFileName = "appmanifest.json"
+		destFileName     = "dest.js" // All plugin files will be put into one file, it's `dest.js`
+		entryFile        = "code.js" // Entry file of plugins
 	)
 
 	// Check `manifest`, `code.js` exists
@@ -72,10 +74,19 @@ func (p *Parser) RunParser() error {
 	// 	return fmt.Errorf("`appmanifest.json or code.js deso not exist")
 	// }
 
-	// err = p.parseManfest(destFileName)
-	// if err != nil {
-	// 	return err
-	// }
+	// Parse `appmanifest.joson`
+	// Check if this file exists first
+	// If manifest exists, store all info with this *UserID* of current user
+	// In redis or some other storage
+	manifestExists := checkFileExists(files, manifestFileName, true)
+	if manifestExists == false {
+		return fmt.Errorf("`appmanifest.json` is not uploaded")
+	}
+
+	err = p.parseManifest(destFileName)
+	if err != nil {
+		return err
+	}
 
 	// TODO: Check if code.js includes all method declared in manifest.json
 
@@ -103,6 +114,11 @@ func (p *Parser) RunParser() error {
 	return nil
 }
 
+// Check if file is uploaded
+// 	- files: uploaded files
+// 	- fn: file name, check if this file is in the uploaded files
+// 	- full: if it's true, check `fn` as full name,
+// 		or check if `fn` is included in the file name
 func checkFileExists(files []os.FileInfo, fn string, full bool) bool {
 	if files == nil {
 		return false
@@ -187,8 +203,8 @@ func (p *Parser) processFile(f *os.File, file os.FileInfo) error {
 	return nil
 }
 
-// Parse manifest file
-func (p *Parser) parseManfest(fileName string) error {
+// Parse `appmanifest.json` file
+func (p *Parser) parseManifest(fileName string) error {
 	var m models.Manifest
 	buff, err := ioutil.ReadFile(path.Join(p.sourceDir, fileName))
 	json.Unmarshal(buff, &m)

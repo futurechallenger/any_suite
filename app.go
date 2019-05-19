@@ -7,15 +7,15 @@ Run docker in the last
 package main
 
 import (
+	"any_suite/config"
 	"flag"
 	"fmt"
-	"int_ecosys/config"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"int_ecosys/controllers"
-	"int_ecosys/utils"
+	"any_suite/controllers"
+	"any_suite/utils"
 )
 
 var BUILD_TYPE string

@@ -5,7 +5,7 @@
 package config
 
 import (
-	"int_ecosys/utils"
+	"any_suite/utils"
 	"os"
 )
 
