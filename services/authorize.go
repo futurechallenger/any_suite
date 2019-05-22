@@ -12,9 +12,9 @@ func GetAuthInfo() {
 
 // StoreAuthInfo stores auth info
 func StoreAuthInfo(autoInfo *models.AuthInfo) (int64, error) {
-	database := data.NewIntEcoDB()
+	database := data.NewAppDB()
 	if database == nil {
-		return -1, fmt.Errorf("IntEcoDB initialized error")
+		return -1, fmt.Errorf("AppDB initialized error")
 	}
 
 	rowID, err := database.StoreToken(autoInfo)

@@ -6,21 +6,21 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func TestNewIntEcoDB(t *testing.T) {
-	if db := NewIntEcoDB(); db == nil {
+func TestNewAppDB(t *testing.T) {
+	if db := NewAppDB(); db == nil {
 		t.Error("Open db error")
 	}
 }
 
 func TestSQLStatement(t *testing.T) {
-	database := NewIntEcoDB()
+	database := NewAppDB()
 	if database == nil {
 		t.Error("Create new int_eco db error")
 	}
 
 	const TableName = "token_info"
 	sql := database.generateCreateSQL(TableName)
-	if sql != "DROP TABLE IF EXISTS `token_info`; CREATE TABLE `token_info`(`id` int(64) unsigned PRIMARY KEY AUTO_INCREMENT,`access_token` varchar(50),`expires_in` timestamp not null,`refresh_token` varchar(50),`refresh_token_expires_in` timestamp,`scope` VARCHAR(255),`owner_id` varchar(100),`endpoint_id` varchar(100));" {
+	if sql != "CREATE TABLE `token_info`(`id` int(64) unsigned PRIMARY KEY AUTO_INCREMENT,`access_token` varchar(50),`expires_in` timestamp not null,`refresh_token` varchar(50),`refresh_token_expires_in` timestamp,`scope` VARCHAR(255),`owner_id` varchar(100),`endpoint_id` varchar(100));" {
 		t.Errorf("Create statement error: %s\n", sql)
 	}
 }
@@ -32,7 +32,7 @@ func TestConn(t *testing.T) {
 		}
 	}()
 
-	database := NewIntEcoDB()
+	database := NewAppDB()
 	database.Conn()
 }
 func TestCreateTable(t *testing.T) {
@@ -43,7 +43,8 @@ func TestCreateTable(t *testing.T) {
 		}
 	}()
 
-	database := NewIntEcoDB()
+	database := NewAppDB()
+	database.Conn()
 	database.CreateTokenTable("token_info")
 
 	if ret := database.TableExists("token_info"); ret != true {
@@ -57,7 +58,7 @@ func TestDropTable(t *testing.T) {
 		}
 	}()
 
-	database := NewIntEcoDB()
+	database := NewAppDB()
 	if database == nil {
 		t.Errorf("create table failed")
 	}

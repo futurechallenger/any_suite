@@ -28,7 +28,7 @@ func main() {
 	config.SetBuildEnv(flag.String("env", "debug", "runing in env `debug` or `release`"))
 
 	// Start DB
-	// data.NewIntEcoDB()
+	// data.NewAppDB()
 
 	// Echo instance
 	e := echo.New()

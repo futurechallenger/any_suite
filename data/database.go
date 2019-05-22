@@ -12,13 +12,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// IntEcoDB system db service
-type IntEcoDB struct {
+// AppDB system db service
+type AppDB struct {
 	db *sql.DB
 }
 
 // StoreToken stores auth info including auth token and refresh token, etc.
-func (database *IntEcoDB) StoreToken(tokenInfo *models.AuthInfo) (rowID int64, err error) {
+func (database *AppDB) StoreToken(tokenInfo *models.AuthInfo) (rowID int64, err error) {
 	if tokenInfo == nil {
 		return -1, errors.New("tokenInfo is invalid")
 	}
@@ -51,27 +51,27 @@ func (database *IntEcoDB) StoreToken(tokenInfo *models.AuthInfo) (rowID int64, e
 }
 
 // TODO: get token by what? `owner_id` or anything else?
-// func (database *IntEcoDB) getToken() (info models.AuthInfo, err error) {
+// func (database *AppDB) getToken() (info models.AuthInfo, err error) {
 //}
 
-// NewIntEcoDB create new db instance
-func NewIntEcoDB() (dbInstance *IntEcoDB) {
-	db := &IntEcoDB{
+// NewAppDB create new db instance
+func NewAppDB() (dbInstance *AppDB) {
+	db := &AppDB{
 		db: nil,
 	}
 	return db
 }
 
 // Close close inner db instance
-func (database *IntEcoDB) Close() {
+func (database *AppDB) Close() {
 	if database.db != nil {
 		database.db.Close()
 	}
 }
 
 // Conn connect to mysql database
-func (database *IntEcoDB) Conn() {
-	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:7002)/inteco")
+func (database *AppDB) Conn() {
+	db, err := sql.Open("mysql", "root:any_suite@tcp(127.0.0.1:3306)/any_suite")
 	if err != nil {
 		fmt.Printf("Connect to db error %v\n", err)
 		panic(err.Error())
@@ -87,7 +87,7 @@ func (database *IntEcoDB) Conn() {
 }
 
 // Closed return if the db connection is closed
-func (database *IntEcoDB) Closed() bool {
+func (database *AppDB) Closed() bool {
 	if database.db == nil {
 		return true
 	}
@@ -101,9 +101,9 @@ func (database *IntEcoDB) Closed() bool {
 }
 
 // DBExists check if db exists
-func (database *IntEcoDB) dbExists(dbName string, intecoDB *IntEcoDB) bool {
+func (database *AppDB) dbExists(dbName string, appDB *AppDB) bool {
 	database.Conn()
-	row := intecoDB.db.QueryRow(fmt.Sprintf("SELECT dbname FROM INFORMATION_SCHEMA.SCHEMATA WHERE SWHERE SCHEMA_NAME = '%s'", dbName))
+	row := appDB.db.QueryRow(fmt.Sprintf("SELECT dbname FROM INFORMATION_SCHEMA.SCHEMATA WHERE SWHERE SCHEMA_NAME = '%s'", dbName))
 	dbname := ""
 	row.Scan(&dbname)
 
@@ -112,13 +112,13 @@ func (database *IntEcoDB) dbExists(dbName string, intecoDB *IntEcoDB) bool {
 	return dbname != ""
 }
 
-// IntEcoDBExists check if `inteco` db exists
-func (database *IntEcoDB) IntEcoDBExists() bool {
+// AppDBExists check if `inteco` db exists
+func (database *AppDB) AppDBExists() bool {
 	return database.dbExists("inteco", database)
 }
 
 // TableExists check if a table exists
-func (database *IntEcoDB) TableExists(tableName string) bool {
+func (database *AppDB) TableExists(tableName string) bool {
 	database.Conn()
 
 	sql := fmt.Sprintf("SELECT 1 FROM %s LIMIT 1;", tableName)
@@ -132,7 +132,7 @@ func (database *IntEcoDB) TableExists(tableName string) bool {
 // generateCreateSQL generate `token_info` state for now
 // Later it should be a generate function to generate
 // create table statement
-func (database *IntEcoDB) generateCreateSQL(tableName string) string {
+func (database *AppDB) generateCreateSQL(tableName string) string {
 	pk := "`id` int(64) unsigned PRIMARY KEY AUTO_INCREMENT"
 	accessToken := "`access_token` varchar(50)"
 	expiresIn := "`expires_in` timestamp not null"
@@ -155,7 +155,7 @@ func (database *IntEcoDB) generateCreateSQL(tableName string) string {
 }
 
 // CreateTokenTable if the db is first initialized
-func (database *IntEcoDB) CreateTokenTable(tableName string) {
+func (database *AppDB) CreateTokenTable(tableName string) {
 	if database.db == nil || database.Closed() {
 		database.Conn()
 	}
@@ -183,7 +183,7 @@ func (database *IntEcoDB) CreateTokenTable(tableName string) {
 }
 
 // DropTable drop mysql table
-func (database *IntEcoDB) DropTable(tableName string) error {
+func (database *AppDB) DropTable(tableName string) error {
 	database.Conn()
 	dropSQL := fmt.Sprintf("DROP TABLE IF EXISTS %s;", tableName)
 	stmt, err := database.db.Prepare(dropSQL)

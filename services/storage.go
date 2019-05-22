@@ -7,6 +7,9 @@ package services
 //   "github.com/mongodb/mongo-go-driver/mongo"
 //   "github.com/mongodb/mongo-go-driver/mongo/options"
 // )
+import (
+	"any_suite/data"
+)
 
 // StorageManager stores data into `redis` or `mongo db`
 type StorageManager struct{}
@@ -16,20 +19,10 @@ func NewStorageManager() (*StorageManager, error) {
 	return &StorageManager{}, nil
 }
 
-func (p *StorageManager) connect() error {
-	// client, err := mongo.Connect(context.TODO(), "mongodb://localhost:27017")
+// Run runs storage method
+func (p *StorageManager) Run() error {
+	db := data.NewAppDB()
+	db.Conn()
 
-	// if err != nil {
-	// 		log.Fatal(err)
-	// }
-
-	// // Check the connection
-	// err = client.Ping(context.TODO(), nil)
-
-	// if err != nil {
-	// 		log.Fatal(err)
-	// }
-
-	// fmt.Println("Connected to MongoDB!")
 	return nil
 }

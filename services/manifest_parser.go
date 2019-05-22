@@ -1,6 +1,8 @@
 package services
 
-import "any_suite/models"
+import (
+	"any_suite/models"
+)
 
 // ManifestParser parses `appmanifest.json`
 type ManifestParser struct {
