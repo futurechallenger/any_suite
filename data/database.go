@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jinzhu/gorm"
 	// Register mysql driver
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -72,8 +71,7 @@ func (database *AppDB) Close() {
 
 // Conn connect to mysql database
 func (database *AppDB) Conn() {
-	// db, err := sql.Open("mysql", "root:any_suite@tcp(127.0.0.1:3306)/any_suite")
-	db, err := gorm.Open("mysql", "root:any_suite@tcp(127.0.0.1:3306)/any_suite")
+	db, err := sql.Open("mysql", "root:any_suite@tcp(127.0.0.1:3306)/any_suite")
 	if err != nil {
 		fmt.Printf("Connect to db error %v\n", err)
 		panic(err.Error())
@@ -201,4 +199,7 @@ func (database *AppDB) DropTable(tableName string) error {
 	return err
 }
 
-func (db *AppDB) InsertInfo()
+// InsertInfo inserts data into db
+func (database *AppDB) InsertInfo() (int, error) {
+	return 0, nil
+}
