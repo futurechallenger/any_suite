@@ -78,15 +78,15 @@ func (p *Parser) RunParser() error {
 	// Check if this file exists first
 	// If manifest exists, store all info with this *UserID* of current user
 	// In redis or some other storage
-	manifestExists := checkFileExists(files, manifestFileName, true)
-	if manifestExists == false {
-		return fmt.Errorf("`appmanifest.json` is not uploaded")
-	}
+	// manifestExists := checkFileExists(files, manifestFileName, true)
+	// if manifestExists == false {
+	// 	return fmt.Errorf("`appmanifest.json` is not uploaded")
+	// }
 
-	err = p.parseManifest(destFileName)
-	if err != nil {
-		return err
-	}
+	// err = p.parseManifest(destFileName)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// TODO: Check if code.js includes all method declared in manifest.json
 
@@ -101,6 +101,12 @@ func (p *Parser) RunParser() error {
 
 	for _, file := range files {
 		fmt.Printf("File name: %v\n", file.Name())
+		// TODO: parse manifest file later
+		if file.Name() == manifestFileName {
+			continue
+			// TODO: parse manifest file later
+		}
+
 		err = p.processFile(f, file)
 		// Stops at the first error
 		if err != nil {
