@@ -101,6 +101,11 @@ func (p *Parser) RunParser() error {
 
 	for _, file := range files {
 		fmt.Printf("File name: %v\n", file.Name())
+		// Not parse `appmanifest.jsonnn`
+		if file.Name() == ManifestName {
+			continue
+		}
+
 		err = p.processFile(f, file)
 		// Stops at the first error
 		if err != nil {
@@ -212,6 +217,8 @@ func (p *Parser) parseManifest(fileName string) error {
 	fmt.Printf("===>String %s, Manifest: %v\n", string(buff), m)
 
 	p.Manifest = m
+	manifestParser := NewManifestParser(&m)
+	manifestParser.Run()
 
 	return err
 }

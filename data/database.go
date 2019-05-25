@@ -12,6 +12,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const DB_NAME = "any_suite"
+
 // AppDB system db service
 type AppDB struct {
 	db *sql.DB
@@ -54,11 +56,19 @@ func (database *AppDB) StoreToken(tokenInfo *models.AuthInfo) (rowID int64, err 
 // func (database *AppDB) getToken() (info models.AuthInfo, err error) {
 //}
 
-// NewAppDB create new db instance
+// NewAppDB create new db instance, connection also establishs in tihs function
 func NewAppDB() (dbInstance *AppDB) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("Init app db error %v\n", err)
+		}
+	}()
 	db := &AppDB{
 		db: nil,
 	}
+
+	db.Conn()
+
 	return db
 }
 
@@ -114,7 +124,7 @@ func (database *AppDB) dbExists(dbName string, appDB *AppDB) bool {
 
 // AppDBExists check if `inteco` db exists
 func (database *AppDB) AppDBExists() bool {
-	return database.dbExists("inteco", database)
+	return database.dbExists(DB_NAME, database)
 }
 
 // TableExists check if a table exists
@@ -202,4 +212,9 @@ func (database *AppDB) DropTable(tableName string) error {
 // InsertInfo inserts data into db
 func (database *AppDB) InsertInfo() (int, error) {
 	return 0, nil
+}
+
+// UpdateInfo updates data
+func (database *AppDB) UpdateInfo() (int, error) {
+
 }
